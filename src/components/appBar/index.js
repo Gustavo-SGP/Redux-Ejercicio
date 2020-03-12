@@ -1,12 +1,67 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Page from './page';
+import findSuggestions from '../../redux/actions/findSuggestions';
 
-const IAppBar = () => {
-    return (
-        <>
-          <Page />  
-        </>
-    );
+
+class IAppBar extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            text: '',
+        };
+
+        this.onChangeText = this.onChangeText.bind(this);
+        this.onChangeSelection = this.onChangeSelection.bind(this);
+    }
+
+
+    onChangeText(text) {
+        this.setState({ text });
+
+        this.props.findSuggestions(text);
+    }
+
+    onChangeSelection(text) {
+
+    }
+
+    render() {
+        const { text } = this.state;
+        const { suggestions } = this.props;
+
+        return (
+            <Page 
+                text={text}
+                suggestions={suggestions}
+                onChangeText={this.onChangeText}
+                onChangeSelection={this.onChangeSelection}
+            />
+        );
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+      suggestions: state.suggestions,
+    };
 };
 
-export default IAppBar;
+//Versión fácil recomendada por documentación
+
+const mapDispatchToProps = {
+    findSuggestions,
+};
+
+
+
+//Versión más compleja para manipular mejor el dispatch
+
+// const mapDispatchToProps = (dispatch) => {
+//     return {
+//         findSuggestions: text => dispatch(findSuggestions(text)),
+//     }
+// };
+
+export default connect(mapStateToProps, mapDispatchToProps)(IAppBar);
